@@ -4,6 +4,7 @@ import { CircleHelp } from "lucide-react";
 import { ImagePreview } from "./components/ImagePreview";
 import { WIDTH, STAGES } from "./lib/consts";
 import { StagesProgress } from "./components/StagesProgress";
+import { cn } from "./lib/utils";
 
 const CORRECT_ANSWERS = ["חתול", "חתולה"];
 
@@ -12,6 +13,9 @@ function App() {
   const [stage, setStage] = useState(0);
   const [guess, setGuess] = useState("");
   const [height, setHeight] = useState(426);
+  const [userStatus, setUserStatus] = useState<
+    "initial" | "correct" | "incorrect"
+  >("initial");
 
   useEffect(() => {
     scaleImage("https://cataas.com/cat?width=300&height=400", WIDTH).then(
@@ -28,10 +32,25 @@ function App() {
 
     if (CORRECT_ANSWERS.includes(guess.trim())) {
       setStage(STAGES - 1);
+      setUserStatus("correct");
     } else {
+      setUserStatus("incorrect");
       setGuess("");
       setStage((s) => s + 1);
     }
+  };
+
+  const getPlaceholder = () => {
+    if (userStatus === "correct") {
+      return guess;
+    }
+    if (stage === STAGES - 1) {
+      return CORRECT_ANSWERS[0];
+    }
+    if (userStatus === "initial") {
+      return "מי בתמונה?";
+    }
+    return "תשובה לא נכונה, נסו שנית";
   };
 
   return (
@@ -50,18 +69,22 @@ function App() {
         <button
           className="mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
           onClick={() => setStage((s) => s + 1)}
-          disabled={stage >= STAGES - 1}
+          disabled={stage >= STAGES - 1 && userStatus !== "correct"}
         >
           לתמונה ברורה יותר &gt;
         </button>
         <StagesProgress stage={stage} />
         <form
-          className="border border-black p-1.5 rounded-full flex focus-within:ring"
+          className={cn("border p-1.5 rounded-full flex focus-within:ring", {
+            "border-black": userStatus === "initial",
+            "border-green-500": userStatus === "correct",
+            "border-red-500": userStatus === "incorrect",
+          })}
           onSubmit={onGuess}
         >
           <input
             className="border-none h-8 grow px-3 outline-none"
-            placeholder="מי בתמונה?"
+            placeholder={getPlaceholder()}
             required
             value={guess}
             onChange={(e) => setGuess(e.target.value)}
@@ -69,7 +92,11 @@ function App() {
           <button
             type="submit"
             className="rounded-full size-8 bg-yellow-300 cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
-            disabled={guess.length === 0}
+            disabled={
+              guess.length === 0 &&
+              userStatus !== "correct" &&
+              stage < STAGES - 1
+            }
           >
             &gt;
           </button>
