@@ -1,26 +1,17 @@
-import { FormEvent, Fragment, useEffect, useState } from "react";
-import { cn } from "./utils";
-import { scaleImage } from "./image-tools";
-import { CircleHelp, LoaderCircle } from "lucide-react";
-
-const WIDTH = 320;
-const STAGES = 7;
-const FIRST_STAGE = 32;
-const LAST_STAGE = 1;
+import { FormEvent, useEffect, useState } from "react";
+import { scaleImage } from "./lib/image-tools";
+import { CircleHelp } from "lucide-react";
+import { ImagePreview } from "./components/ImagePreview";
+import { WIDTH, STAGES } from "./lib/consts";
+import { StagesProgress } from "./components/StagesProgress";
 
 const CORRECT_ANSWERS = ["חתול", "חתולה"];
-
-const getScaleFactor = (stage: number) => {
-  const v = (STAGES - stage - 1) / STAGES;
-  return FIRST_STAGE * v + LAST_STAGE * (1 - v);
-};
 
 function App() {
   const [originalImage, setOriginalImage] = useState<string>();
   const [stage, setStage] = useState(0);
-  const [scaledImage, setScaledImage] = useState<string>();
-  const [height, setHeight] = useState(426);
   const [guess, setGuess] = useState("");
+  const [height, setHeight] = useState(426);
 
   useEffect(() => {
     scaleImage("https://cataas.com/cat?width=300&height=400", WIDTH).then(
@@ -30,13 +21,6 @@ function App() {
       }
     );
   }, []);
-
-  useEffect(() => {
-    if (!originalImage) return;
-    scaleImage(originalImage, WIDTH / getScaleFactor(stage)).then((b) =>
-      setScaledImage(URL.createObjectURL(b.data))
-    );
-  }, [originalImage, stage]);
 
   const onGuess = (event: FormEvent) => {
     event.preventDefault();
@@ -62,27 +46,7 @@ function App() {
         <header className="text-lg text-center mb-4">
           גלו מי בתמונה בכמה שפחות צעדים
         </header>
-        <div
-          className="overflow-hidden w-full"
-          style={{ height: `${height}px` }}
-        >
-          {scaledImage ? (
-            <div
-              className="origin-top-right"
-              style={{
-                transform: `scale(${getScaleFactor(stage)})`,
-                imageRendering: "pixelated",
-              }}
-            >
-              <img
-                width={`${Math.ceil(WIDTH / getScaleFactor(stage))}px`}
-                src={scaledImage}
-              />
-            </div>
-          ) : (
-            <LoaderCircle className="size-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin stroke-gray-200" />
-          )}
-        </div>
+        <ImagePreview height={height} image={originalImage} stage={stage} />
         <button
           className="mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
           onClick={() => setStage((s) => s + 1)}
@@ -90,29 +54,7 @@ function App() {
         >
           לתמונה ברורה יותר &gt;
         </button>
-        <div className="flex flex-row items-center justify-center my-5">
-          {[...new Array(STAGES)].map((_, i) => (
-            <Fragment key={i}>
-              <div
-                className={cn(
-                  "rounded-full size-6 bg-gray-200 text-gray-700 relative text-center",
-                  {
-                    "bg-yellow-300 font-bold": i <= stage,
-                  }
-                )}
-              >
-                {i + 1}
-              </div>
-              {i < 6 && (
-                <div
-                  className={cn("h-2 w-6 -mx-1 bg-gray-200", {
-                    "bg-yellow-300": i < stage,
-                  })}
-                />
-              )}
-            </Fragment>
-          ))}
-        </div>
+        <StagesProgress stage={stage} />
         <form
           className="border border-black p-1.5 rounded-full flex focus-within:ring"
           onSubmit={onGuess}
