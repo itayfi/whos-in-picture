@@ -22,18 +22,20 @@ export function ImagePreview({
     );
   }, [image, stage]);
 
+  const scaleFactor = getScaleFactor(stage);
+
   return (
     <div className="overflow-hidden w-full" style={{ height: `${height}px` }}>
       {scaledImage ? (
         <div
           className="origin-top-right"
           style={{
-            transform: `scale(${getScaleFactor(stage)})`,
-            imageRendering: "pixelated",
+            transform: `scale(${scaleFactor})`,
+            imageRendering: scaleFactor === 1 ? "auto" : "pixelated",
           }}
         >
           <img
-            width={`${Math.ceil(WIDTH / getScaleFactor(stage))}px`}
+            width={`${Math.ceil(WIDTH / scaleFactor)}px`}
             src={scaledImage}
           />
         </div>
