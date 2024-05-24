@@ -1,4 +1,4 @@
-import { CircleHelp } from "lucide-react";
+import { Camera, CircleHelp, Upload } from "lucide-react";
 import { DrawerContent, DrawerRoot, DrawerTrigger } from "./ui/Drawer";
 import { useRef, useState } from "react";
 
@@ -42,22 +42,38 @@ export const SettingDialog = ({
           onSubmit={handleSubmit}
         >
           <h1 className="text-lg font-semibold">הגדרות</h1>
+          <div className="font-medium">בחר תמונה</div>
           <label>
-            <div className="font-medium">בחר תמונה</div>
             <div className="flex items-center">
-              <div className="grow">{file ? file.name : "לא נבחר קובץ"}</div>
-              <div className="bg-yellow-300 py-1 px-2 rounded cursor-pointer">
+              <div className="grow">{file ? file.name : "בחר קובץ"}</div>
+              <div className="bg-yellow-300 py-1 px-2 w-32 rounded cursor-pointer flex gap-1.5 items-center">
+                <Upload className="size-5 stroke-1.5" />
                 בחר...
               </div>
             </div>
             <input
               className="hidden"
               type="file"
-              required
               onChange={(e) => setFile(e.target.files?.[0])}
               accept="image/*"
             />
           </label>
+          <div className="flex md:hidden items-center justify-end gap-2.5">
+            <div className="text-sm text-gray-600">או</div>
+            <label>
+              <div className="bg-yellow-300 py-2 px-2 w-32 rounded cursor-pointer flex gap-1.5 items-center">
+                <Camera className="size-5 stroke-1.5" />
+                צלם תמונה
+              </div>
+              <input
+                className="hidden"
+                type="file"
+                onChange={(e) => setFile(e.target.files?.[0])}
+                accept="image/*"
+                capture="environment"
+              />
+            </label>
+          </div>
           <label>
             <div className="font-medium">אפשרויות לתשובה נכונה:</div>
             <textarea
@@ -69,13 +85,13 @@ export const SettingDialog = ({
           <div className="flex justify-end gap-1.5">
             <DrawerTrigger
               type="reset"
-              className="bg-gray-200 py-1 px-2 rounded cursor-pointer"
+              className="bg-gray-200 py-1.5 px-3 rounded cursor-pointer"
             >
               ביטול
             </DrawerTrigger>
             <button
               type="submit"
-              className="bg-yellow-300 py-1 px-2 rounded cursor-pointer"
+              className="bg-yellow-300 py-1.5 px-3 rounded cursor-pointer"
             >
               שמור
             </button>
