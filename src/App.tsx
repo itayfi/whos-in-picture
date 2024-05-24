@@ -27,10 +27,9 @@ function App() {
 
   const onGuess = (event: FormEvent) => {
     event.preventDefault();
-    if (guess.length === 0) return;
+    if (guess.length === 0 || stage === STAGES - 1) return;
 
     if (correctAnswers.includes(guess.trim())) {
-      setStage(STAGES - 1);
       setUserStatus("correct");
     } else {
       setUserStatus("incorrect");
@@ -73,11 +72,20 @@ function App() {
         <header className="text-lg text-center mb-4">
           גלו מי בתמונה בכמה שפחות צעדים
         </header>
-        <ImagePreview height={height} image={originalImage} stage={stage} />
+        <ImagePreview
+          height={height}
+          image={originalImage}
+          stage={userStatus === "correct" ? STAGES - 1 : stage}
+        />
         <button
           className="mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
-          onClick={() => setStage((s) => s + 1)}
-          disabled={stage >= STAGES - 1 && userStatus !== "correct"}
+          onClick={() => {
+            setStage((s) => s + 1);
+            if (stage === STAGES - 2) {
+              setUserStatus("incorrect");
+            }
+          }}
+          disabled={stage >= STAGES - 1 || userStatus === "correct"}
         >
           לתמונה ברורה יותר &gt;
         </button>
@@ -101,14 +109,22 @@ function App() {
             type="submit"
             className="rounded-full size-8 bg-yellow-300 cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
             disabled={
-              guess.length === 0 &&
-              userStatus !== "correct" &&
-              stage < STAGES - 1
+              guess.length === 0 ||
+              stage >= STAGES - 1 ||
+              userStatus === "correct"
             }
           >
             &gt;
           </button>
         </form>
+        {userStatus === "correct" && (
+          <div className="text-green-700 p-2">
+            כל הכבוד! הצלחתם לזהות תוך {stage + 1} צעדים
+          </div>
+        )}
+        {userStatus === "incorrect" && stage === STAGES - 1 && (
+          <div className="text-red-700 p-2">לא הצלחת לזהות הפעם, לא נורא</div>
+        )}
       </div>
     </>
   );
