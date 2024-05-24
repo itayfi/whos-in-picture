@@ -5,7 +5,9 @@ import { getScaleFactor } from "../lib/consts";
 import { WIDTH } from "../lib/consts";
 
 export function ImagePreview({
-  image, stage, height,
+  image,
+  stage,
+  height,
 }: {
   image: string | undefined;
   stage: number;
@@ -15,7 +17,8 @@ export function ImagePreview({
 
   useEffect(() => {
     if (!image) return;
-    scaleImage(image, WIDTH / getScaleFactor(stage)).then((b) => setScaledImage(URL.createObjectURL(b.data))
+    scaleImage(image, WIDTH / getScaleFactor(stage)).then((b) =>
+      setScaledImage(URL.createObjectURL(b.data))
     );
   }, [image, stage]);
 
@@ -31,7 +34,8 @@ export function ImagePreview({
         >
           <img
             width={`${Math.ceil(WIDTH / getScaleFactor(stage))}px`}
-            src={scaledImage} />
+            src={scaledImage}
+          />
         </div>
       ) : (
         <LoaderCircle className="size-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin stroke-gray-200" />

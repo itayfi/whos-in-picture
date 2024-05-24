@@ -1,15 +1,14 @@
 import { FormEvent, useEffect, useState } from "react";
 import { scaleImage } from "./lib/image-tools";
-import { CircleHelp } from "lucide-react";
 import { ImagePreview } from "./components/ImagePreview";
 import { WIDTH, STAGES } from "./lib/consts";
 import { StagesProgress } from "./components/StagesProgress";
 import { cn } from "./lib/utils";
-
-const CORRECT_ANSWERS = ["חתול", "חתולה"];
+import { SettingDialog, Settings } from "./components/SettingsDialog";
 
 function App() {
   const [originalImage, setOriginalImage] = useState<string>();
+  const [correctAnswers, setCorrectAnswers] = useState(["חתול", "חתולה"]);
   const [stage, setStage] = useState(0);
   const [guess, setGuess] = useState("");
   const [height, setHeight] = useState(426);
@@ -30,7 +29,7 @@ function App() {
     event.preventDefault();
     if (guess.length === 0) return;
 
-    if (CORRECT_ANSWERS.includes(guess.trim())) {
+    if (correctAnswers.includes(guess.trim())) {
       setStage(STAGES - 1);
       setUserStatus("correct");
     } else {
@@ -40,12 +39,23 @@ function App() {
     }
   };
 
+  const onChangeSettings = ({ image, correctAnswers }: Settings) => {
+    scaleImage(URL.createObjectURL(image), WIDTH).then((result) => {
+      setHeight(result.height);
+      setOriginalImage(URL.createObjectURL(result.data));
+      setCorrectAnswers(correctAnswers);
+      setStage(0);
+      setUserStatus("initial");
+      setGuess("");
+    });
+  };
+
   const getPlaceholder = () => {
     if (userStatus === "correct") {
       return guess;
     }
     if (stage === STAGES - 1) {
-      return CORRECT_ANSWERS[0];
+      return correctAnswers[0];
     }
     if (userStatus === "initial") {
       return "מי בתמונה?";
@@ -56,9 +66,7 @@ function App() {
   return (
     <>
       <div className="border-b border-b-black px-2 leading-none">
-        <button className="cursor-pointer p-2">
-          <CircleHelp />
-        </button>
+        <SettingDialog onChange={onChangeSettings} />
       </div>
       <div className="w-80 mx-auto my-0 mb-8">
         <h1 className="text-4xl text-center my-2">מי אני?</h1>
