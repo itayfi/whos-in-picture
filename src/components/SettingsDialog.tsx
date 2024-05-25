@@ -1,6 +1,6 @@
 import { Camera, CircleHelp, Upload } from "lucide-react";
 import { DrawerContent, DrawerRoot, DrawerTrigger } from "./ui/Drawer";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 export type Settings = { image: File; correctAnswers: string[] };
 
@@ -31,6 +31,8 @@ export const SettingDialog = ({
     setFile(undefined);
   };
 
+  const fileImageUrl = useMemo(() => file && URL.createObjectURL(file), [file]);
+
   return (
     <DrawerRoot open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger>
@@ -42,37 +44,46 @@ export const SettingDialog = ({
           onSubmit={handleSubmit}
         >
           <h1 className="text-lg font-semibold">הגדרות</h1>
-          <div className="font-medium">בחר תמונה</div>
-          <label>
-            <div className="flex items-center">
-              <div className="grow">{file ? file.name : "בחר קובץ"}</div>
-              <div className="bg-yellow-300 py-1 px-2 w-32 rounded cursor-pointer flex gap-1.5 items-center">
-                <Upload className="size-5 stroke-1.5" />
-                בחר...
-              </div>
-            </div>
-            <input
-              className="hidden"
-              type="file"
-              onChange={(e) => setFile(e.target.files?.[0])}
-              accept="image/*"
-            />
-          </label>
-          <div className="flex md:hidden items-center justify-end gap-2.5">
-            <div className="text-sm text-gray-600">או</div>
-            <label>
-              <div className="bg-yellow-300 py-2 px-2 w-32 rounded cursor-pointer flex gap-1.5 items-center">
-                <Camera className="size-5 stroke-1.5" />
-                צלם תמונה
-              </div>
-              <input
-                className="hidden"
-                type="file"
-                onChange={(e) => setFile(e.target.files?.[0])}
-                accept="image/*"
-                capture="environment"
-              />
-            </label>
+          <div className="font-medium h-8 flex items-bottom">
+            בחר תמונה
+            {file ? (
+              <button
+                className="text-xs py-2 px-4 text-gray-500 cursor-pointer"
+                onClick={() => setFile(undefined)}
+              >
+                ניקוי
+              </button>
+            ) : null}
+          </div>
+          <div className="relative size-80 rounded border-2 border-gray-200 border-dashed flex flex-col items-center justify-center gap-2">
+            {file ? (
+              <img className="max-w-80 max-h-80" src={fileImageUrl} />
+            ) : (
+              <>
+                <label className="bg-yellow-300 py-2 px-2 w-32 rounded cursor-pointer flex gap-1.5 items-center">
+                  <Upload className="size-5 stroke-1.5" />
+                  בחר קובץ
+                  <input
+                    className="hidden"
+                    type="file"
+                    onChange={(e) => setFile(e.target.files?.[0])}
+                    accept="image/*"
+                  />
+                </label>
+                <div className="text-sm text-gray-600 md:hidden">או</div>
+                <label className="bg-yellow-300 py-2 px-2 w-32 rounded cursor-pointer flex gap-1.5 items-center md:hidden">
+                  <Camera className="size-5 stroke-1.5" />
+                  צלם תמונה
+                  <input
+                    className="hidden"
+                    type="file"
+                    onChange={(e) => setFile(e.target.files?.[0])}
+                    accept="image/*"
+                    capture="environment"
+                  />
+                </label>
+              </>
+            )}
           </div>
           <label>
             <div className="font-medium">אפשרויות לתשובה נכונה:</div>
