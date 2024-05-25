@@ -78,7 +78,7 @@ function App() {
           stage={userStatus === "correct" ? STAGES - 1 : stage}
         />
         <button
-          className="mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
+          className="mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer transition-colors disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
           onClick={() => {
             setStage((s) => s + 1);
             if (stage === STAGES - 2) {
@@ -107,7 +107,7 @@ function App() {
           />
           <button
             type="submit"
-            className="rounded-full size-8 bg-yellow-300 cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
+            className="transition-colors rounded-full size-8 bg-yellow-300 cursor-pointer disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
             disabled={
               guess.length === 0 ||
               stage >= STAGES - 1 ||

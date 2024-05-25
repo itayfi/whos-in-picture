@@ -8,7 +8,7 @@ export const StagesProgress = ({ stage }: { stage: number; }) => (
       <Fragment key={i}>
         <div
           className={cn(
-            "rounded-full size-6 bg-gray-200 text-gray-700 relative text-center",
+            "rounded-full size-6 bg-gray-200 text-gray-700 relative text-center transition-colors",
             {
               "bg-yellow-300 font-bold": i <= stage,
             }
@@ -18,7 +18,7 @@ export const StagesProgress = ({ stage }: { stage: number; }) => (
         </div>
         {i < 6 && (
           <div
-            className={cn("h-2 w-6 -mx-1 bg-gray-200", {
+            className={cn("h-2 w-6 -mx-1 bg-gray-200 transition-colors", {
               "bg-yellow-300": i < stage,
             })} />
         )}
