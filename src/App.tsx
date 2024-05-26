@@ -80,6 +80,8 @@ function App() {
     return "תשובה לא נכונה, נסו שנית";
   };
 
+  const gameOver = stage >= STAGES - 1 || userStatus === "correct";
+
   return (
     <>
       <div className="border-b border-b-black px-2 leading-none">
@@ -96,16 +98,20 @@ function App() {
           stage={userStatus === "correct" ? STAGES - 1 : stage}
         />
         <button
-          className="mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer transition-colors disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default"
+          className={cn(
+            "mx-auto h-10 -mt-5 px-5 text-lg rounded-full block bg-yellow-300 relative cursor-pointer transition-colors disabled:bg-gray-200 disabled:text-gray-700 disabled:cursor-default",
+            {
+              invisible: gameOver,
+            }
+          )}
           onClick={() => {
             setStage((s) => s + 1);
             if (stage === STAGES - 2) {
               setUserStatus("incorrect");
             }
           }}
-          disabled={stage >= STAGES - 1 || userStatus === "correct"}
         >
-          לתמונה ברורה יותר &gt;
+          {stage < STAGES - 2 ? "לתמונה ברורה יותר" : "גלו לי מי זה"} &gt;
         </button>
         <StagesProgress stage={stage} />
         <form

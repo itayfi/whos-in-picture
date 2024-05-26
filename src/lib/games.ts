@@ -6,7 +6,7 @@ import {
   addDoc,
   collection,
   Bytes,
-} from "firebase/firestore";
+} from "firebase/firestore/lite";
 
 const app = initializeApp({
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
