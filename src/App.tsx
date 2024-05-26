@@ -1,10 +1,11 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { scaleImage } from "./lib/image-tools";
 import { ImagePreview } from "./components/ImagePreview";
 import { WIDTH, STAGES } from "./lib/consts";
 import { StagesProgress } from "./components/StagesProgress";
 import { cn } from "./lib/utils";
 import { SettingDialog, Settings } from "./components/SettingsDialog";
+import { getGame } from "./lib/games";
 
 function App() {
   const [originalImage, setOriginalImage] = useState<string>();
@@ -16,13 +17,30 @@ function App() {
     "initial" | "correct" | "incorrect"
   >("initial");
 
+  const getInitialUrl = useCallback(async () => {
+    if (location.search.length > 1) {
+      const gameId = location.search.slice(1);
+      try {
+        const gameData = await getGame(gameId);
+        if (gameData) {
+          setCorrectAnswers(gameData.answers);
+          return URL.createObjectURL(gameData.imageData);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    return "https://cataas.com/cat?width=300&height=400";
+  }, []);
+
   useEffect(() => {
-    scaleImage("https://cataas.com/cat?width=300&height=400", WIDTH).then(
-      (result) => {
+    getInitialUrl()
+      .then((url) => scaleImage(url, WIDTH))
+      .then((result) => {
         setHeight(result.height);
         setOriginalImage(URL.createObjectURL(result.data));
-      }
-    );
+      });
   }, []);
 
   const onGuess = (event: FormEvent) => {

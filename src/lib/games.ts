@@ -18,7 +18,10 @@ type GameData = { answers: string[]; imageData: Blob };
 export async function getGame(id: string) {
   const docRef = doc(db, "games", id);
   const docSnap = await getDoc(docRef);
-  const data = docSnap.data() as { answers: string[]; imageData: Bytes };
+  const data = docSnap.data() as
+    | { answers: string[]; imageData: Bytes }
+    | undefined;
+  if (!data) return undefined;
   return {
     ...data,
     imageData: new Blob([data.imageData.toUint8Array()]),
